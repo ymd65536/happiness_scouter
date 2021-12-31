@@ -47,6 +47,7 @@ def lambda_handler(event, context):
     # ファイル名にはuser_idが付与される想定
     file_extend = image_key.split('.')
     user_id = file_extend[0].split('_')[1]
+    image_id = file_extend[0].split('_')[0]
 
     # Rekognition を実行
     try:
@@ -102,8 +103,9 @@ def lambda_handler(event, context):
             print("オブジェクトID登録")
             print(type(item))
             item['object_id'] = image_key
+            item['image_id'] = image_id
             print("オブジェクトID登録完了")
-
+            print(item)
             # レコード登録
             dynamo_table = get_dynamo_table(table_name)
             dynamo_table.put_item(Item=item)
