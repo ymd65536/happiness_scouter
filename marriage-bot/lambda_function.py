@@ -44,9 +44,20 @@ def lambda_handler(event, context):
             'statusCode': 200,
             'body': ''
         }
+
     # bodyからevent を取得する
     body_event = body['events'][0]
     reply_token = body_event['replyToken']
+
+    # DynamoDBのテーブル名が設定されていない場合はメッセージを出して終了
+    if table_name == "":
+        response_message = "現在、サービスを停止しております。"
+        line_bot_api.reply_message(
+            reply_token,
+            TextSendMessage(text=response_message))
+
+        return
+
     message_type = body_event['message']['type']
     event_type = body_event['type']
     message_id = body_event['message']['id']
