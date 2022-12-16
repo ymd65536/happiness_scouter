@@ -37,7 +37,6 @@ def get_dynamo_table(table_name):
 def lambda_handler(event, context):
 
     body = json.loads(event['body'])
-    print(body)
 
     # Webhookの接続確認用
     if len(body['events']) == 0:
