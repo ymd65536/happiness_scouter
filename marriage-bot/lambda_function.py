@@ -45,14 +45,15 @@ def lambda_handler(event, context):
             'statusCode': 200,
             'body': ''
         }
-
-    reply_token = body['events'][0]['replyToken']
-    message_type = body['events'][0]['message']['type']
-    event_type = body['events'][0]['type']
-    message_id = body['events'][0]['message']['id']
+    # bodyからevent を取得する
+    body_event = body['events'][0]
+    reply_token = body_event['replyToken']
+    message_type = body_event['message']['type']
+    event_type = body_event['type']
+    message_id = body_event['message']['id']
 
     # ユーザIDを取得
-    user_id = body['events'][0]['source']['userId']
+    user_id = body_event['source']['userId']
 
     if event_type == 'message':
         if message_type == 'text':
