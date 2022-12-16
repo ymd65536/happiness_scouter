@@ -15,22 +15,24 @@ table_name = os.getenv('DYNAMODB_TABLE_NAME', None)
 
 line_bot_api = LineBotApi(channel_access_token)
 
-#Headerの生成
+# Headerの生成
 HEADER = {
     'Content-type':
     'application/json',
     'Authorization':
-    'Bearer ' +channel_access_token
+    'Bearer ' + channel_access_token
 }
+
 
 def get_dynamo_table(table_name):
     session = Session(
-            region_name='ap-northeast-1'
+        region_name='ap-northeast-1'
     )
- 
+
     dynamodb = session.resource('dynamodb')
     dynamo_table = dynamodb.Table(table_name)
     return dynamo_table
+
 
 def lambda_handler(event, context):
 
@@ -58,10 +60,11 @@ def lambda_handler(event, context):
                 reply_token,
                 TextSendMessage(text='テキストを受信しました。'))
 
-        elif message_type == 'image' :
+        elif message_type == 'image':
             try:
                 error_message = ''
-                image_file = requests.get('https://api-data.line.me/v2/bot/message/'+ message_id +'/content',headers=HEADER)
+                image_file = requests.get(
+                    'https://api-data.line.me/v2/bot/message/' + message_id + '/content', headers=HEADER)
                 image_bin = BytesIO(image_file.content)
                 image = image_bin.getvalue()
 
@@ -83,7 +86,8 @@ def lambda_handler(event, context):
 
                 # 画像をS3に保存
                 s3 = boto3.client('s3')
-                s3.put_object(Bucket=bucket_name,Body=image,Key=message_id+"_"+user_id+'.jpg')
+                s3.put_object(Bucket=bucket_name, Body=image,
+                              Key=message_id+"_"+user_id+'.jpg')
 
             except Exception as e:
                 error_message = str(e)
@@ -92,17 +96,17 @@ def lambda_handler(event, context):
                     TextSendMessage(text=error_message))
                 return
 
-        elif message_type == 'sticker' :
+        elif message_type == 'sticker':
             line_bot_api.reply_message(
                 reply_token,
                 TextSendMessage(text='スタンプを受信しました。'))
 
-        else :
+        else:
             line_bot_api.reply_message(
                 reply_token,
                 TextSendMessage(text='メッセージタイプ' + message_type))
 
-    elif event_type=='postback':
+    elif event_type == 'postback':
         line_bot_api.reply_message(
             reply_token,
             TextSendMessage(text='タイプ:' + event_type))
